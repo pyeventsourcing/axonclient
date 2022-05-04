@@ -188,7 +188,7 @@ class AxonClient:
         component_name: str = "",
         processor: str = "",
         blacklist: Iterable[PayloadDescription] = (),
-    ) -> List[Tuple[str, AxonEvent]]:
+    ) -> List[Tuple[int, AxonEvent]]:
 
         return list(
             self.iter_events(
@@ -209,7 +209,7 @@ class AxonClient:
         component_name: str = "",
         processor: str = "",
         blacklist: Iterable[PayloadDescription] = (),
-    ) -> Iterable[Tuple[str, AxonEvent]]:
+    ) -> Iterable[Tuple[int, AxonEvent]]:
 
         request = GetEventsRequest(
             tracking_token=tracking_token,
