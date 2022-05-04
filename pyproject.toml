@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "axonclient"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python client for Axon Server"
 authors = [
     "John Bywater <john.bywater@appropriatesoftware.net>",
