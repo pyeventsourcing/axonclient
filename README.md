@@ -111,15 +111,15 @@ and creating the Poetry virtual environment using PyCharm (see above).
 
 ### Project Makefile commands
 
-You can start EventStoreDB using the following command.
+You can start Axon Server using the following command.
 
     $ make start-axon-server
 
-You can run tests using the following command.
+You can run tests using the following command (needs Axon Server to be running).
 
     $ make test
 
-You can stop EventStoreDB using the following command.
+You can stop Axon Server using the following command.
 
     $ make stop-axon-server
 
