@@ -6,74 +6,44 @@ env:
   POETRY_CACHE_DIR: /home/runner/.local/.cache
 
 jobs:
-  prepare:
+  test:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
-        os: [ubuntu-20.04]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Set up cache
-        id: cached-dependencies
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.local
-          key: os-${{ matrix.os }}-python-${{ matrix.python-version}}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install Poetry
         if: steps.cached-dependencies.outputs.cache-hit != 'true'
         run: make install-poetry
+
       - name: Install packages
         if: steps.cached-dependencies.outputs.cache-hit != 'true'
         run: make install-packages opts="--no-root"
 
-  lint:
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
-        os: [ubuntu-20.04]
-    runs-on: ${{ matrix.os }}
-    needs: prepare
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Set up cache
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.local
-          key: os-${{ matrix.os }}-python-${{ matrix.python-version}}-${{ hashFiles('**/poetry.lock') }}
       - name: Lint
         run: make lint
 
-  tests:
-    needs: prepare
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
-        os: [ubuntu-20.04]
-    runs-on: ${{ matrix.os }}
+      - name: Start Axon Server (for Aggregates)
+        run: make start-axon-server-aggregates
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Set up cache
-        uses: actions/cache@v2
-        with:
-          path: /home/runner/.local
-          key: os-${{ matrix.os }}-python-${{ matrix.python-version}}-${{ hashFiles('**/poetry.lock') }}
-      - name: Start Axon Server
-        run: |
-          make start-axon-server
-          sleep 60
-      - name: Run tests
-        run: make test
+      - name: Run tests (for Aggregates)
+        run: TEST_BENCHMARK_NUM_ITERS=20 make test-axon-client-aggregates
+
+      - name: Stop Axon Server (for Aggregates)
+        run: make stop-axon-server-aggregates
+
+      - name: Start Axon Server (for DCB)
+        run: make start-axon-server-dcb
+
+      - name: Run tests (for DCB)
+        run: TEST_BENCHMARK_NUM_ITERS=20 make test-axon-client-dcb
+
+      - name: Stop Axon Server (for DCB)
+        run: make stop-axon-server-dcb

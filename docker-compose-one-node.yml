@@ -1,0 +1,18 @@
+services:
+  axon1:
+    image: axoniq/axonserver:latest-jdk-17-nonroot
+    container_name: axon1
+    hostname: axon1
+    environment:
+      AXONIQ_AXONSERVER_NAME: axon1
+      AXONIQ_AXONSERVER_HOSTNAME: axon1
+      AXONIQ_AXONSERVER_DCB_ENABLED: "true"
+      AXONIQ_AXONSERVER_CLUSTER_MODE: "SINGLE_NODE"
+    ports:
+      - "8124:8124"
+      - "8024:8024"
+    volumes:
+      - axon1-data:/data
+
+volumes:
+  axon1-data:

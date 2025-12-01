@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  axon1:
+    image: axoniq/axonserver:latest-jdk-17-nonroot
+    container_name: axon1
+    hostname: axon1
+    environment:
+      AXONIQ_AXONSERVER_NAME: axon1
+      AXONIQ_AXONSERVER_HOSTNAME: axon1
+      AXONIQ_AXONSERVER_DCB_ENABLED: "true"
+      AXONIQ_AXONSERVER_CLUSTER_SERVERS: axon1@axon1:8124,axon2@axon2:8124,axon3@axon3:8124
+    ports:
+      - "8124:8124"
+      - "8024:8024"
+    volumes:
+      - axon1-data:/data
+
+  axon2:
+    image: axoniq/axonserver:latest-jdk-17-nonroot
+    container_name: axon2
+    hostname: axon2
+    environment:
+      AXONIQ_AXONSERVER_NAME: axon2
+      AXONIQ_AXONSERVER_HOSTNAME: axon2
+      AXONIQ_AXONSERVER_DCB_ENABLED: "true"
+      AXONIQ_AXONSERVER_CLUSTER_SERVERS: axon1@axon1:8124,axon2@axon2:8124,axon3@axon3:8124
+    ports:
+      - "8125:8124"
+      - "8025:8024"
+    volumes:
+      - axon2-data:/data
+
+  axon3:
+    image: axoniq/axonserver:latest-jdk-17-nonroot
+    container_name: axon3
+    hostname: axon3
+    environment:
+      AXONIQ_AXONSERVER_NAME: axon3
+      AXONIQ_AXONSERVER_HOSTNAME: axon3
+      AXONIQ_AXONSERVER_DCB_ENABLED: "true"
+      AXONIQ_AXONSERVER_CLUSTER_SERVERS: axon1@axon1:8124,axon2@axon2:8124,axon3@axon3:8124
+    ports:
+      - "8126:8124"
+      - "8026:8024"
+    volumes:
+      - axon3-data:/data
+
+volumes:
+  axon1-data:
+  axon2-data:
+  axon3-data:

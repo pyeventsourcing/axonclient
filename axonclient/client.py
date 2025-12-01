@@ -2,7 +2,7 @@
 import threading
 import time
 from time import sleep
-from typing import Any, Iterable, List, Tuple, Union
+from typing import Any, Iterable, List, Sequence, Tuple, Union
 from uuid import uuid4
 
 import grpc
@@ -11,6 +11,7 @@ from grpc import StatusCode
 from grpc._channel import _InactiveRpcError
 
 from axonclient.exceptions import OutOfRangeError
+from axonclient.protos import dcb_pb2, dcb_pb2_grpc
 from axonclient.protos.common_pb2 import SerializedObject
 from axonclient.protos.event_pb2 import (
     Event,
@@ -23,8 +24,6 @@ from axonclient.protos.event_pb2 import (
     TrackingToken,
 )
 from axonclient.protos.event_pb2_grpc import EventStoreStub
-
-DEFAULT_LOCAL_AXONSERVER_URI = "localhost:8124"
 
 
 class AxonEvent(object):
@@ -101,6 +100,7 @@ class AxonClient:
         self.uri = uri
         self.channel = grpc.insecure_channel(self.uri)
         self.event_store_stub = EventStoreStub(self.channel)
+        self.dcb_event_store_stub = dcb_pb2_grpc.DcbEventStoreStub(self.channel)
 
     def list_aggregate_events(
         self, aggregate_id: str, initial_sequence: int, allow_snapshots: bool
@@ -249,3 +249,20 @@ class AxonClient:
             GetFirstTokenRequest()
         )
         return first_token.token
+
+    def dcb_append(
+        self,
+        events: Sequence[dcb_pb2.TaggedEvent],
+        condition: dcb_pb2.ConsistencyCondition,
+    ) -> None:
+        requests = [
+            dcb_pb2.AppendEventsRequest(
+                condition=condition,
+                event=events,
+            )
+        ]
+        response = self.dcb_event_store_stub.Append(iter(requests))
+        assert isinstance(response, dcb_pb2.AppendEventsResponse)
+        # TODO: Figure response out more... am looking for the sequence position of the last event.
+        # response.sequence_of_the_first_event
+        # response.consistency_marker  <- is it this?
