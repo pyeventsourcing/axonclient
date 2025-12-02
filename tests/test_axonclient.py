@@ -203,7 +203,7 @@ class TestAxonClientWithAggregatesAPI(AxonClientCase):
                 )
             duration = datetime.datetime.now() - start
             rate = num_per_iter / duration.total_seconds()
-            print(f"After {(i+1) * num_per_iter} events. Rate:", rate, "events/s")
+            print(f"After {(i + 1) * num_per_iter:} events, rate: {rate:.0f} events/s")
 
     def test_append_and_list_snapshot_events(self) -> None:
         client = self.connect()
@@ -341,4 +341,4 @@ class TestAxonClientWithDCBAPI(AxonClientCase):
                 )
             duration = datetime.datetime.now() - start
             rate = num_per_iter / duration.total_seconds()
-            print(f"After {(i + 1) * num_per_iter} events. Rate:", rate, "events/s")
+            print(f"After {(i + 1) * num_per_iter:} events, rate: {rate:.0f} events/s")
