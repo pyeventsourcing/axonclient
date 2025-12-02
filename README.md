@@ -34,7 +34,7 @@ Install Poetry.
 
 Install packages.
 
-    $ make install-packages
+    $ make install
 
 Start Axon Server for aggregates.
 
@@ -73,4 +73,4 @@ Tests belong in `./tests`. Code-under-test belongs in `./axonclient`.
 Edit package dependencies in `pyproject.toml`. Update installed packages (and the
 `poetry.lock` file) using the following command.
 
-    $ make update-packages
+    $ make update

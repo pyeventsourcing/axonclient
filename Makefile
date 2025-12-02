@@ -9,29 +9,16 @@ install-poetry:
 	@pipx install --suffix="@$(POETRY_VERSION)" "poetry==$(POETRY_VERSION)"
 	$(POETRY) --version
 
-.PHONY: install-packages
-install-packages:
-	$(POETRY) install -vv $(opts)
+.PHONY: install
+install:
+	$(POETRY) sync --all-extras $(opts)
 
-.PHONY: install-pre-commit-hooks
-install-pre-commit-hooks:
-ifeq ($(opts),)
-	$(POETRY) run pre-commit install
-endif
+.PHONY: update
+update: update-lock install
 
-.PHONY: uninstall-pre-commit-hooks
-uninstall-pre-commit-hooks:
-ifeq ($(opts),)
-	$(POETRY) run pre-commit uninstall
-endif
-
-.PHONY: lock-packages
-lock-packages:
-	$(POETRY) lock -vv --no-update
-
-.PHONY: update-packages
-update-packages:
-	$(POETRY) update -vv
+.PHONY: update-lock
+update-lock:
+	$(POETRY) update --lock -v
 
 .PHONY: lint-black
 lint-black:
@@ -65,10 +52,6 @@ fmt-isort:
 
 .PHONY: fmt
 fmt: fmt-black fmt-isort
-
-.PHONY: test
-test:
-	$(POETRY) run python -m pytest -v $(opts) $(call tests,.)
 
 .PHONY: build
 build:
