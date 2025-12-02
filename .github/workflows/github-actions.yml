@@ -25,7 +25,7 @@ jobs:
 
       - name: Install packages
         if: steps.cached-dependencies.outputs.cache-hit != 'true'
-        run: make install-packages opts="--no-root"
+        run: make install
 
       - name: Lint
         run: make lint
