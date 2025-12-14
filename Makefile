@@ -78,7 +78,8 @@ grpc-stubs:
 
 .PHONY: start-axon-server-aggregates
 start-axon-server-aggregates:
-	docker run -d --name my-axon-server -p 8024:8024 -p 8124:8124 axoniq/axonserver axonserver
+	docker pull axoniq/axonserver:latest
+	docker run -d --rm --name my-axon-server-aggregates -p 8024:8024 -p 8124:8124 axoniq/axonserver:latest axonserver
 	@printf "Waiting for Axon Server to initialize"
 	@until curl -sf -X POST "http://127.0.0.1:8024/v2/cluster/init" \
 	      | grep -q "Accepted init cluster request"; do \
@@ -90,33 +91,33 @@ start-axon-server-aggregates:
 
 .PHONY: stop-axon-server-aggregates
 stop-axon-server-aggregates:
-	docker stop my-axon-server
-	docker rm my-axon-server
+	docker stop my-axon-server-aggregates
 
 .PHONY: start-axon-server-dcb
 start-axon-server-dcb:
-	docker run -d \
-	  --name my-axon-dcb-server \
+	docker pull axoniq/axonserver:latest
+	docker run -d --rm \
+	  --name my-axon-server-dcb \
 	  -p 8024:8024 \
 	  -p 8124:8124 \
 	  -e AXONIQ_AXONSERVER_NAME=my-axon-dcb-server \
 	  -e AXONIQ_AXONSERVER_HOSTNAME=my-axon-dcb-server \
-	  -e AXONIQ_AXONSERVER_DCB_ENABLED="true" \
-	  -e AXONIQ_AXONSERVER_CLUSTER_MODE="SINGLE_NODE" \
+	  -e AXONIQ_AXONSERVER_STANDALONE_DCB="true" \
 	  axoniq/axonserver
+	sleep 15
+#	  -e AXONIQ_AXONSERVER_EVENT_FORCE_INTERVAL="0" \
 #	  axoniq/axonserver:latest-jdk-17-nonroot
-	@printf "Waiting for Axon Server to initialize DCB"
-	@until curl -sf -X POST "http://127.0.0.1:8024/v2/cluster/init?dcb=true" \
-	      | grep -q "Accepted init cluster request"; do \
-		printf "."; \
-		sleep 1; \
-	done
-	@echo " done."
+#	@printf "Waiting for Axon Server to initialize DCB"
+# 	@until curl -sf -X POST "http://127.0.0.1:8024/v2/cluster/init?dcb=true" \
+#	      | grep -q "Accepted init cluster request"; do \
+#		printf "."; \
+#		sleep 1; \
+#	done
+#	@echo " done."
 
 .PHONY: stop-axon-server-dcb
 stop-axon-server-dcb:
-	docker stop my-axon-dcb-server
-	docker rm my-axon-dcb-server
+	docker stop my-axon-server-dcb
 
 .PHONY: test-axon-client-aggregates
 test-axon-client-aggregates:

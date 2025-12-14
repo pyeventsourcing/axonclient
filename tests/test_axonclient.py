@@ -2,6 +2,7 @@
 import datetime
 import http.client
 import os
+from time import sleep
 from unittest import TestCase, skip, skipIf
 from uuid import uuid4
 
@@ -323,8 +324,9 @@ class TestAxonClientWithDCBAPI(AxonClientCase):
         for i in range(num_iters):
             start = datetime.datetime.now()
             num_per_iter = 1000
-            for j in range(num_per_iter):
+            for _ in range(num_per_iter):
                 tag1 = self._generate_tag()
+                # print(tag1)
                 client.dcb_append(
                     events=[self._generate_tagged_event(tag1)],
                     condition=dcb_pb2.ConsistencyCondition(

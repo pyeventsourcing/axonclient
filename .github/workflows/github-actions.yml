@@ -42,6 +42,9 @@ jobs:
       - name: Start Axon Server (for DCB)
         run: make start-axon-server-dcb
 
+      - name: Sleep for one minute
+        run: sleep 60
+
       - name: Run tests (for DCB)
         run: TEST_BENCHMARK_NUM_ITERS=20 make test-axon-client-dcb
 
